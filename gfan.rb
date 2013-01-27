@@ -20,9 +20,9 @@ class Gfan
     end
   end
 
-  def topics
-    1.upto 100000 do |page|
-      url = "http://bbs.gfan.com/forum-274-#{page}.html"
+  def topics(forum,pages)
+    pages do |page|
+      url = "http://bbs.gfan.com/forum-#{forum}-#{page}.html"
       @agent.get url do |page|
         page.search('tbody[id^=normalthread] a.xst').each do |a|
           yield a
@@ -39,11 +39,11 @@ class Gfan
     end
   end
 
-  def start
+  def start(forum)
     check login do |c|
       c ? 'login success!' : "#{exit!}"
     end 
-    topics do |topic|
+    topics forum,yield do |topic|
       puts topic.text
       check reply(@@url + topic.attr('href'),@@replies.sample) do |c|
         c ? 'success!' : ''
@@ -62,11 +62,12 @@ class Gfan
       print yield false
     end
   end
-
-
 end
 
-Gfan.new('valentine1992','11352355').start
+#forum to reply,274 if http://bbs.gfan.com/forum-274-1.html
+Gfan.new('valentine1992','11352355').start 274 do
+  1..2   #page to reply into this forum
+end
 
 __END__
 感谢分享。。。。
