@@ -2,7 +2,7 @@
 require 'digest/md5'
 require 'mechanize'
 
-class Gfan
+class GfanReplier
   def initialize(username,password)
     @@url='http://bbs.gfan.com/'
     @username=username
@@ -21,7 +21,7 @@ class Gfan
   end
 
   def topics(forum,pages)
-    pages do |page|
+    pages.each do |page|
       url = "http://bbs.gfan.com/forum-#{forum}-#{page}.html"
       @agent.get url do |page|
         page.search('tbody[id^=normalthread] a.xst').each do |a|
@@ -43,7 +43,7 @@ class Gfan
     check login do |c|
       c ? 'login success!' : "#{exit!}"
     end 
-    topics forum,yield do |topic|
+    topics(forum,yield) do |topic|
       puts topic.text
       check reply(@@url + topic.attr('href'),@@replies.sample) do |c|
         c ? 'success!' : ''
@@ -58,15 +58,15 @@ class Gfan
     if msg.empty?
       puts yield true
     else
-      puts msg.search('p').text
+      puts msg.search('p').text.split("\n").first
       print yield false
     end
   end
 end
 
 #forum to reply,274 if http://bbs.gfan.com/forum-274-1.html
-Gfan.new('valentine1992','11352355').start 274 do
-  1..2   #page to reply into this forum
+GfanReplier.new('valentine1992','11352355').start 274 do
+  1..2   #page to reply into this forum,something like 2..9 , [1,3,5,7] available
 end
 
 __END__
