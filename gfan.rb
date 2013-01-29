@@ -20,12 +20,14 @@ class GfanReplier
     end
   end
 
-  def topics(forum,pages)
-    pages.each do |page|
-      url = "http://bbs.gfan.com/forum-#{forum}-#{page}.html"
-      @agent.get url do |page|
-        page.search('tbody[id^=normalthread] a.xst').each do |a|
-          yield a
+  def topics(forums,pages)
+    forums.each do |forum|
+      pages.each do |page|
+        url = "http://bbs.gfan.com/forum-#{forum}-#{page}.html"
+        @agent.get url do |page|
+          page.search('tbody[id^=normalthread] a.xst').each do |a|
+            yield a
+          end
         end
       end
     end
@@ -39,7 +41,7 @@ class GfanReplier
     end
   end
 
-  def start(forum)
+  def start(*forum)
     check login do |c|
       c ? 'login success!' : "#{exit!}"
     end 
@@ -48,7 +50,7 @@ class GfanReplier
       check reply(@@url + topic.attr('href'),@@replies.sample) do |c|
         c ? 'success!' : ''
       end 
-      sleep 3
+      sleep 4
     end
   end
 
@@ -65,7 +67,7 @@ class GfanReplier
 end
 
 #forum to reply,274 if http://bbs.gfan.com/forum-274-1.html
-GfanReplier.new('valentine1992','11352355').start 274 do
+GfanReplier.new('valentine1992','11352355').start 13,274 do
   1..2   #page to reply into this forum,something like 2..9 , [1,3,5,7] available
 end
 
