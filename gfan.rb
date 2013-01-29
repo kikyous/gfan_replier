@@ -6,7 +6,7 @@ class GfanReplier
   def initialize(username,password)
     @@url='http://bbs.gfan.com/'
     @username=username
-    @password=Digest::MD5.hexdigest password
+    @password=password.length==32 ? password : Digest::MD5.hexdigest(password)
     @agent=Mechanize.new
     @@replies=DATA.readlines
   end
@@ -67,7 +67,7 @@ class GfanReplier
 end
 
 #forum to reply,274 if http://bbs.gfan.com/forum-274-1.html
-GfanReplier.new('valentine1992','11352355').start 13,274 do
+GfanReplier.new('valentine1992','059b350777373250532337960bddede0').start 13,274 do
   1..2   #page to reply into this forum,something like 2..9 , [1,3,5,7] available
 end
 
