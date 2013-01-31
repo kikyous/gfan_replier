@@ -12,16 +12,14 @@ class GfanReplier
   end
 
   def login
-    begin
-      @agent.get('http://bbs.gfan.com/forum.php') do |page|
-        return page.form do |login|
-          login.username=@username
-          login.password=@password
-        end.submit
-      end
-    rescue
-      false
+    @agent.get('http://bbs.gfan.com/forum.php') do |page|
+      return page.form do |login|
+        login.username=@username
+        login.password=@password
+      end.submit
     end
+  rescue
+    false
   end
 
   def topics(forums,pages)
@@ -38,15 +36,13 @@ class GfanReplier
   end
 
   def reply(topic,msg)
-    begin
       @agent.get topic do |page|
         return page.form_with(:id => 'fastpostform') do |form|
           form.message=msg
         end.submit
       end
-    rescue
-      false
-    end
+  rescue
+    false
   end
 
   def start(*forum)
