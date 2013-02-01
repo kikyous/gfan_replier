@@ -8,7 +8,7 @@ class GfanReplier
     @username=username
     @password=password.length==32 ? password : Digest::MD5.hexdigest(password)
     @agent=Mechanize.new
-    @@replies=DATA.readlines
+    @@replies= File.new('content.txt','r').readlines
   end
 
   def login
@@ -46,14 +46,12 @@ class GfanReplier
   end
 
   def start(*forum)
-    check login do |c|
-      c ? 'login success!' : "#{exit!}"
-    end 
+    check(login) { |c| c ? 'login success!' : "#{exit!}" }
     topics(forum,yield) do |topic|
       puts topic.text
       check reply(@@url + topic.attr('href'),@@replies.sample) do |c|
         c ? 'success!' : ''
-      end 
+      end
       sleep 4
     end
   end
@@ -75,9 +73,3 @@ end
 GfanReplier.new('valentine1992','059b350777373250532337960bddede0').start 13,274 do
   1  #page to reply into this forum,something like 1 , 2..9 , [1,3,5,7] available
 end
-
-__END__
-感谢分享。。。。
-看看怎么样
-我是来拿经验的
-虽然不知道楼主在说什么,但是好像很厉害的样子
